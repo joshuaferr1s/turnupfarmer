@@ -1,5 +1,8 @@
+<script setup>
+  import AppBar from "@/components/AppBar.vue";
+</script>
+
 <template>
-  <h1>Turnup Farmer</h1>
-  <p>Current route: {{ $route.fullPath }}</p>
+  <app-bar />
   <RouterView />
 </template>
