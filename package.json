@@ -5,10 +5,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "vite build && firebase deploy"
   },
   "license": "MIT",
   "dependencies": {
+    "firebase": "^10.12.5",
     "vue": "^3.4.34",
     "vue-router": "^4.4.0"
   },
