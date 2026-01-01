@@ -61,7 +61,7 @@
 
   // Export full attendance as CSV
   const exportFinalAttendance = () => {
-    const date = new Date().toISOString().split("T")[0];
+    const date = new Date().toLocaleDateString("en-CA");
     let csv = "UniqueID,Name,Status,Time_In,Date\n";
 
     Object.entries(store.roster).forEach(([uniqueID, name]) => {
