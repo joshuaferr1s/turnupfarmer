@@ -29,12 +29,21 @@
             results.data.forEach(row => {
               const { UniqueID: uniqueID, Name: name, Status: status, Date: date, Time_In: time } = row;
               dateSet.add(date);
-              totalRecords++;
-              if (status === "Present") totalPresent++;
               if (!localMap[uniqueID]) {
-                localMap[uniqueID] = { uniqueID, name, presentCount: 0, absentCount: 0, history: [] };
+                localMap[uniqueID] = { uniqueID, name, presentCount: 0, absentCount: 0, excusedCount: 0, history: [] };
               }
-              localMap[uniqueID][status === "Present" ? "presentCount" : "absentCount"]++;
+
+              if (status === "Present") {
+                localMap[uniqueID].presentCount++;
+                totalPresent++;
+              } else if (status === "Absent") {
+                localMap[uniqueID].absentCount++;
+              } else if (status === "Excused") {
+                localMap[uniqueID].excusedCount++;
+                totalPresent++;
+              }
+              totalRecords++;
+
               localMap[uniqueID].history.push({ date, status, time });
             });
             resolve();
@@ -47,8 +56,8 @@
 
     for (const uniqueID in localMap) {
       const student = localMap[uniqueID];
-      const total = student.presentCount + student.absentCount;
-      student.rate = total > 0 ? ((student.presentCount / total) * 100).toFixed(0) : 0;
+      const total = student.presentCount + student.absentCount + student.excusedCount;
+      student.rate = total > 0 ? (((student.presentCount + student.excusedCount) / total) * 100).toFixed(0) : 0;
       student.history.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
@@ -58,10 +67,6 @@
     formVisibile.value = false;
     pendingFiles.value = [];
   };
-
-// const selectedStudentDetails = computed(() => {
-//   return selectedStudentId.value ? studentMap.value[selectedStudentId.value] : null;
-// });
 </script>
 
 <template>
@@ -112,7 +117,7 @@
                 <div class="font-bold text-gray-800 group-hover:text-blue-700">{{ student.name }}</div>
                 <div class="text-[10px] font-mono text-gray-400 uppercase tracking-tighter">{{ student.uniqueID }}</div>
               </td>
-              <td class="px-6 py-4 text-center font-bold font-mono text-gray-600">{{ student.presentCount }} <span class="text-gray-300 font-normal">/ {{ stats.totalDays }}</span></td>
+              <td class="px-6 py-4 text-center font-bold font-mono text-gray-600">{{ student.presentCount + student.excusedCount }} <span class="text-gray-300 font-normal">/ {{ stats.totalDays }}</span></td>
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <div class="flex-1 h-2 bg-gray-100 rounded-full max-w-25">
@@ -139,13 +144,14 @@
             <div class="flex gap-4 mt-2">
               <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Present: {{ students[selectedUniqueID].presentCount }}</div>
               <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Absent: {{ students[selectedUniqueID].absentCount }}</div>
+              <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Excused: {{ students[selectedUniqueID].excusedCount }}</div>
             </div>
           </div>
 
           <div class="p-4 max-h-[60vh] overflow-y-auto bg-gray-50/30">
             <div v-for="entry in students[selectedUniqueID].history" :key="entry.date" class="mb-2 p-3 rounded-xl border bg-white flex items-center justify-between shadow-sm border-gray-100">
               <div class="text-xs font-bold text-gray-600">{{ entry.date }}</div>
-              <span :class="entry.status === 'Present' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'" class="text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">{{ entry.status }}</span>
+              <span :class="{'bg-green-100 text-green-700': entry.status === 'Present', 'bg-red-100 text-red-700': entry.status === 'Absent', 'bg-yellow-100 text-yellow-700': entry.status === 'Excused'}" class="text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">{{ entry.status }}</span>
             </div>
           </div>
         </div>
