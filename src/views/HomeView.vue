@@ -1,4 +1,5 @@
 <script setup>
+  import { store } from "../store.js";
   import FileUpload from "../components/FileUpload.vue";
 </script>
 
@@ -9,5 +10,10 @@
       <p class="text-gray-500 text-lg">Local-first, FERPA-friendly student check-in.</p>
     </section>
     <FileUpload />
+    <section class="max-w-5xl mx-auto text-center mt-10">
+      <button @click="store.page = 'summary'" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded transition-all cursor-pointer">
+        Summarize Attendance Records
+      </button>
+    </section>
   </main>
 </template>

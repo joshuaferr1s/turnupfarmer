@@ -2,7 +2,7 @@ import { reactive } from "vue";
 
 export const store = reactive({
   roster: undefined,
-  page: "scanner", // scanner | generator
+  page: "scanner", // scanner | generator | summary
   clearRoster() {
     if (confirm("Are you sure? This will clear all current attendance data.")) {
       this.roster = undefined;
